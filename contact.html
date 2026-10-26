@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactformulier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+            overflow-x: hidden; 
+        }
+        .contact-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+        }
+        h2 {
+            color: #0b1c3d;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #0b1c3d;
+        }
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e6923b;
+            border-radius: 0;
+            box-sizing: border-box;
+            background-color: #fcfcfc;
+        }
+        textarea {
+            resize: vertical;
+            height: 150px;
+        }
+        button[type="submit"] {
+            background-color: #0b1c3d;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button[type="submit"]:hover {
+            background-color: #08132b;
+        }
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #0b1c3d;
+        }
+
+        /* --- MOBILE OPTIMIZATIONS (Saves Vertical Space) --- */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .contact-container {
+                padding: 15px;
+            }
+            .form-group {
+                margin-bottom: 12px; /* Tighter spacing between fields */
+            }
+            input[type="text"],
+            input[type="email"],
+            textarea {
+                padding: 10px; /* Thinner inputs */
+            }
+            textarea {
+                height: 100px; /* Shorter message box */
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="contact-container">
+    <h2>CONTACT</h2>
+    <form id="form" method="POST">
+        <input type="hidden" name="access_key" value="63e1a15e-f252-4b03-9204-9718a738f7dc">
+        
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone</label>
+            <input type="text" id="phone" name="phone">
+        </div>
+
+        <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+        </div>
+
+        <button type="submit" id="submit-btn">Send</button>
+        <div id="result"></div>
+    </form>
+</div>
+
+<script>
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+        
+        result.innerHTML = "Sending...";
+
+        fetch('https://api.web3forms.com/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: json
+            })
+            .then(async (response) => {
+                let json = await response.json();
+                if (response.status == 200) {
+                    result.innerHTML = "THANK YOU! Your message has been sent. We will get back to you as soon as possible.";
+                    form.reset();
+                } else {
+                    console.log(response);
+                    result.innerHTML = json.message;
+                }
+            })
+            .catch(error => {
+                console.log(error);
+                result.innerHTML = "Something went wrong! Please try again.";
+            });
+    });
+</script>
+
+</body>
+</html>
