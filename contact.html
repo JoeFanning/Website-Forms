@@ -191,7 +191,7 @@
         </form>
     </div>
 
-    <script>
+  <script>
         const form = document.getElementById('form');
         const result = document.getElementById('result');
         const submitBtn = document.getElementById('submit-btn');
@@ -219,7 +219,9 @@
             })
             .then(async (response) => {
                 let jsonRes = await response.json();
-                if (response.status === 200) {
+                console.log("Server Response:", jsonRes); // <--- Check this in your browser console!
+                
+                if (response.status === 200 && jsonRes.success) {
                     result.innerText = "Thank you! Your message has been sent. We will get back to you as soon as possible.";
                     result.className = "success";
                     form.reset();
@@ -229,8 +231,8 @@
                 }
             })
             .catch(error => {
-                console.error(error);
-                result.innerText = "Something went wrong! Please try again.";
+                console.error("Fetch Error:", error);
+                result.innerText = "Something went wrong! Please check your connection.";
                 result.className = "error";
             })
             .finally(() => {
