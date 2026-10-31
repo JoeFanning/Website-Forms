@@ -72,14 +72,37 @@
             resize: vertical;
             height: 120px;
         }
+
+        button[type="submit"] {
+            background-color: #0b1c3d;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background-color 0.2s ease;
+            margin-bottom: 20px;
+        }
+        button[type="submit"]:hover {
+            background-color: #08132b;
+        }
+
+        #result {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #0b1c3d;
+            text-align: center;
+        }
         
-        /* WhatsApp section styling */
+        /* WhatsApp section styling after submit button */
         .whatsapp-section {
             background-color: #f0fdf4;
             border: 2px dashed #22c55e;
             padding: 15px;
-            margin-bottom: 20px;
             text-align: center;
+            border-radius: 4px;
         }
         .whatsapp-section p {
             margin: 0 0 10px 0;
@@ -110,21 +133,6 @@
             fill: white;
         }
 
-        button[type="submit"] {
-            background-color: #0b1c3d;
-            color: white;
-            padding: 12px 25px;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            width: 100%;
-            transition: background-color 0.2s ease;
-        }
-        button[type="submit"]:hover {
-            background-color: #08132b;
-        }
-
         @media screen and (max-width: 768px) {
             body {
                 padding: 5px;
@@ -149,7 +157,8 @@
 <div class="contact-container">
     <h2>Application Form</h2>
     
-    <form action="https://formspree.io/f/mzeejzlp" method="POST">
+    <form id="form" method="POST">
+        <input type="hidden" name="access_key" value="63e1a15e-f252-4b03-9204-9718a738f7dc">
         
         <div class="form-row">
             <div class="form-group">
@@ -203,19 +212,54 @@
             <textarea id="message" name="message" placeholder="Please briefly describe your work experience..." required></textarea>
         </div>
 
-        <!-- WHATSAPP CV INSTRUCTION SECTION -->
+        <!-- SUBMIT BUTTON -->
+        <button type="submit" id="submit-btn">Send Application</button>
+        <div id="result"></div>
+
+        <!-- WHATSAPP CV INSTRUCTION SECTION (AFTER SUBMIT) -->
         <div class="whatsapp-section">
-            <p>Please remember to send your CV to our WhatsApp after submitting!</p>
-            <!-- Replace YOUR_PHONE_NUMBER with your actual WhatsApp phone number including country code (e.g., 15551234567) -->
+            <p>After submitting the form please send your CV directly to our WhatsApp!</p>
             <a href="https://wa.me/31616432221?text=Hello,%20I%20have%20submitted%20my%20application%20form.%20Here%20is%20my%20CV:" target="_blank" class="whatsapp-btn">
                 <svg viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.81 2.41a8.225 8.225 0 0 1 2.41 5.81c0 4.54-3.7 8.24-8.24 8.24-1.46 0-2.88-.38-4.12-1.1l-.3-.17-3.08.81.82-3-.2-.31a8.17 8.17 0 0 1-1.25-4.38c0-4.54 3.7-8.24 8.24-8.24m-3.5 2.58c-.18 0-.36.07-.5.21-.36.35-1.35 1.31-1.35 3.2 0 1.88 1.38 3.7 1.58 3.96.2.25 2.62 4.1 6.42 5.58 3.19 1.24 3.84 1 4.53.94.69-.06 2.22-.91 2.54-1.79.32-.88.32-1.63.22-1.79-.1-.16-.36-.25-.75-.44-.39-.19-2.31-1.14-2.67-1.27-.36-.13-.62-.19-.88.19-.26.38-1 1.27-1.22 1.53-.23.26-.45.29-.84.1-.39-.19-1.65-.61-3.14-1.94-1.16-1.03-1.95-2.3-2.18-2.69-.23-.39-.02-.6.17-.79.17-.17.38-.44.57-.66.19-.22.25-.37.38-.62.13-.25.06-.47-.03-.66-.09-.19-.88-2.12-1.21-2.9-.32-.77-.65-.66-.89-.67z"/></svg>
                 Send CV to WhatsApp
             </a>
         </div>
 
-        <button type="submit" id="submit-btn">Send Application</button>
     </form>
 </div>
+
+<script>
+    // Web3Forms submission feedback handler
+    const form = document.getElementById('form');
+    const result = document.getElementById('result');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        result.innerText = "Submitting form...";
+        
+        const formData = new FormData(form);
+
+        fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            body: formData
+        })
+        .then(async (response) => {
+            let json = await response.json();
+            if (response.status == 200) {
+                result.style.color = "green";
+               result.innerHTML = (json.message || "Form submitted successfully!") + "<br>Please send C.V. to WhatsApp.<br><br>";
+                form.reset();
+            } else {
+                result.style.color = "red";
+                result.innerText = json.message || "Something went wrong!";
+            }
+        })
+        .catch(error => {
+            result.style.color = "red";
+            result.innerText = "Something went wrong!";
+        });
+    });
+</script>
 
 </body>
 </html>
