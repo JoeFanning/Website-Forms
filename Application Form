@@ -52,6 +52,7 @@
         }
         input[type="text"],
         input[type="email"],
+        input[type="file"],
         textarea {
             width: 100%;
             padding: 12px;
@@ -62,8 +63,13 @@
             font-size: 14px;
             transition: border-color 0.2s ease, outline 0.2s ease;
         }
+        input[type="file"] {
+            background-color: #ffffff;
+            cursor: pointer;
+        }
         input[type="text"]:focus,
         input[type="email"]:focus,
+        input[type="file"]:focus,
         textarea:focus {
             outline: none;
             border-color: #0b1c3d;
@@ -118,7 +124,8 @@
 
 <div class="contact-container">
     <h2>Application Form</h2>
-    <form id="form" method="POST">
+    <!-- ADDED: enctype="multipart/form-data" for file uploads -->
+    <form id="form" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="access_key" value="63e1a15e-f252-4b03-9204-9718a738f7dc">
         
         <!-- FIRST NAME & LAST NAME (SIDE-BY-SIDE ON DESKTOP) -->
@@ -170,9 +177,15 @@
             <input type="text" id="nationality" name="nationality" required>
         </div>
 
+        <!-- ADDED: FILE UPLOAD SECTION FOR CV -->
+        <div class="form-group">
+            <label for="attachment">Upload CV / Resume (PDF, DOC, DOCX)</label>
+            <input type="file" id="attachment" name="attachment" accept=".pdf,.doc,.docx" required>
+        </div>
+
         <div class="form-group">
             <label for="message">Message / Work Experience</label>
-            <textarea id="message" name="message" placeholder="Please paste a link to your CV/portfolio or briefly describe your work experience..." required></textarea>
+            <textarea id="message" name="message" placeholder="Please briefly describe your work experience or add relevant links..." required></textarea>
         </div>
 
         <button type="submit" id="submit-btn">Send</button>
